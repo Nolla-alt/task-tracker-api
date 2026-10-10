@@ -7,7 +7,7 @@ using TaskManager.Data.Entities;
 
 namespace TaskManager.Data.Repositories.Interfaces
 {
-    internal interface ICategoryRepository
+    public interface ICategoryRepository
     {
         Task<List<Category>> GetAllAsync();// Get all categories
         Task<Category?> GetByIdAsync(int id);// Get category by id
