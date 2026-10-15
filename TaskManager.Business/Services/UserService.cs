@@ -1,7 +1,7 @@
 ﻿using TaskManager.Data.Entities;
 using TaskManager.Data.Repositories.Interfaces;
 using TaskManager.Business.Services.Interfaces;
-
+using BCrypt.Net;
 namespace TaskManager.Business.Services
 {
     public class UserService : IUserService
@@ -17,14 +17,17 @@ namespace TaskManager.Business.Services
 
         public async Task<User?> GetByIdAsync(int id) => await _repository.GetByIdAsync(id);
 
-        public async Task<User> CreateAsync(string name, string email)
+        public async Task<User> CreateAsync(string name, string email, string password)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Name is required.");
             if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))// Simple email validation
                 throw new ArgumentException("A valid email is required.");
+            if (string.IsNullOrWhiteSpace(password)||password.Length<8)
 
-            var user = new User { Name = name.Trim(), Email = email.Trim().ToLower() };
+                throw new ArgumentException("Password must be at least 8 characters.");
+
+            var user = new User { Name = name.Trim(), Email = email.Trim().ToLower(),PasswordHash= BCrypt.Net.BCrypt.HashPassword(password) };
             return await _repository.CreateAsync(user);
         }
 

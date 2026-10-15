@@ -41,7 +41,7 @@ namespace TaskManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
         {
-            var created = await _service.CreateAsync(dto.Name, dto.Email);
+            var created = await _service.CreateAsync(dto.Name, dto.Email,dto.Password);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, ToDto(created));// created user is returned with a 201 Created status code and the location of the new resource in the response headers
         }
 
