@@ -47,7 +47,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<TaskManager.API.Middleware.ExceptionHandlingMiddleware>();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();//use https redirection middleware to redirect HTTP requests to HTTPS
 
 app.MapControllers();
 

@@ -108,5 +108,26 @@ namespace TaskManager.Data.Repositories
             var rowsAffected = await command.ExecuteNonQueryAsync();
             return rowsAffected > 0;
         }
+
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            await connection.OpenAsync();
+            var command = new SqlCommand("SELECT Id, Name, Email, PasswordHash, CreatedAt FROM Users WHERE Email = @Email", connection);
+            command.Parameters.AddWithValue("@Email", email);
+            using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new User
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    Email = reader.GetString(2),
+                    PasswordHash = reader.GetString(3),
+                    CreatedAt = reader.GetDateTime(4)
+                };
+            }
+            return null;
+        }
     }
 }

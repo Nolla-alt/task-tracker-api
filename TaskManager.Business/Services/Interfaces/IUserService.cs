@@ -9,5 +9,7 @@ namespace TaskManager.Business.Services.Interfaces
         Task<User> CreateAsync(string name, string email,string password);
         Task<bool> UpdateAsync(int id, string name, string email);
         Task<bool> DeleteAsync(int id);
+
+        Task<User?> LoginAsync(string email, string password);
     }
 }

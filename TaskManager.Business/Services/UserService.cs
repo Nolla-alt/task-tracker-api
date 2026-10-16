@@ -47,5 +47,18 @@ namespace TaskManager.Business.Services
         }
 
         public async Task<bool> DeleteAsync(int id) => await _repository.DeleteAsync(id);
+
+        public async Task<User?> LoginAsync(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Email and password are required.");
+
+            var user = await _repository.GetByEmailAsync(email.Trim().ToLower());
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash))
+                return null;
+
+            return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash) ? user : null;
+        }
     }
+
 }
