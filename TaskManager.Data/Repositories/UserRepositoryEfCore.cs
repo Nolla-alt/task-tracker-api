@@ -27,7 +27,7 @@ namespace TaskManager.Data.Repositories
         public async Task<User> CreateAsync(User entity)
         {
             _context.Users.Add(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();//EF Core will automatically set the Id of the entity after saving changes
             return entity;
         }
 

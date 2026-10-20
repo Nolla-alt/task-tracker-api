@@ -26,6 +26,10 @@ namespace TaskManager.Business.Services
             if (string.IsNullOrWhiteSpace(password)||password.Length<8)
 
                 throw new ArgumentException("Password must be at least 8 characters.");
+            var existing = await _repository.GetByEmailAsync(email.Trim().ToLower());
+
+            if (existing != null)
+                throw new ArgumentException("This email is already registered.");
 
             var user = new User { Name = name.Trim(), Email = email.Trim().ToLower(),PasswordHash= BCrypt.Net.BCrypt.HashPassword(password) };
             return await _repository.CreateAsync(user);
@@ -47,7 +51,7 @@ namespace TaskManager.Business.Services
         }
 
         public async Task<bool> DeleteAsync(int id) => await _repository.DeleteAsync(id);
-
+        //Login method to verify user credentials
         public async Task<User?> LoginAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))

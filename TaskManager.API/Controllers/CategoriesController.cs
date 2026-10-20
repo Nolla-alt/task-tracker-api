@@ -2,11 +2,15 @@
 using TaskManager.API.DTOs;
 using TaskManager.Business.Services.Interfaces;
 using TaskManager.Data.Entities;
-
+ using Microsoft.AspNetCore.Authorization;
 namespace TaskManager.API.Controllers
 {
+   
+
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
+ 
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
@@ -39,6 +43,7 @@ namespace TaskManager.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
         {
             var created = await _service.CreateAsync(dto.Name);

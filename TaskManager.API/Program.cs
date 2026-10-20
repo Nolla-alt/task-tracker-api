@@ -6,6 +6,10 @@ using TaskManager.Business.Services.Interfaces;
 using TaskManager.Data.Context;
 using TaskManager.Data.Repositories;
 using TaskManager.Data.Repositories.Interfaces;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,8 +35,58 @@ builder.Services.AddScoped<ITaskItemRepository, TaskItemRepositoryEfCore>();
 builder.Services.AddScoped<ITaskItemService, TaskItemService>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Paste only the token, without the word Bearer."
+    });
 
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+// ---- Configure JWT Authentication ----
+var jwt = builder.Configuration.GetSection("Jwt");
+var jwtKey = jwt["Key"]!;
+//{ "email":"test@tpst.com","password":"<its real password>"}
+builder.Services.AddSingleton<ITokenService>(
+    new TokenService(jwtKey, jwt["Issuer"]!, jwt["Audience"]!, int.Parse(jwt["ExpireMinutes"]!)));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {//mapInboundClaims is set to false to prevent automatic mapping of JWT claims to Microsoft identity claims
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {  
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwt["Issuer"],
+            ValidAudience = jwt["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
@@ -49,6 +103,8 @@ app.UseMiddleware<TaskManager.API.Middleware.ExceptionHandlingMiddleware>();
 
 //app.UseHttpsRedirection();//use https redirection middleware to redirect HTTP requests to HTTPS
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
