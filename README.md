@@ -1,5 +1,6 @@
 # TaskManager API
 ![CI](https://github.com/erenmulkoglu/TaskManagerAPI/actions/workflows/ci.yml/badge.svg)
+
 A layered ASP.NET Core Web API for managing users, categories and tasks, with JWT authentication.
 
 ## Features
