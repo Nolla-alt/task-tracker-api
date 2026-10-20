@@ -1,47 +1,54 @@
-# Task Tracker API
+# TaskManager API
 
-A RESTful API for managing tasks, built with C#, ASP.NET Core, and SQL Server, following a 3-tier layered architecture.
+A layered ASP.NET Core Web API for managing users, categories and tasks, with JWT authentication.
 
-## Architecture
+## Features
+- Register and log in (passwords hashed with BCrypt)
+- JWT bearer tokens, with `[Authorize]` on every endpoint except register and login
+- CRUD for Users, Categories and Task items
+- Clear error responses (400 for rule failures, 401 for bad login or token)
+- Unit tests with xUnit (no database needed)
 
-- **TaskManager.API** — Presentation layer: Controllers, DTOs, request/response handling
-- **TaskManager.Business** — Business layer: Services, business rules, validation
-- **TaskManager.Data** — Data access layer: Entities, Repositories, EF Core and ADO.NET implementations
+## Tech stack
+C#, .NET 8, ASP.NET Core Web API, Entity Framework Core, SQL Server, JWT, BCrypt.Net, Swagger, xUnit
 
-Dependencies flow in one direction only: API → Business → Data.
+## Project structure
+| Project | Job |
+|---|---|
+| TaskManager.API | Controllers, DTOs, Program.cs, middleware |
+| TaskManager.Business | Services and rules (validation, hashing, tokens) |
+| TaskManager.Data | Entities, repositories, database access |
+| TaskManager.Tests | xUnit tests |
 
-## Entities
+Request flow: Controller -> Service -> Repository -> SQL Server.
 
-- **User** — owns tasks
-- **Category** — groups tasks
-- **TaskItem** — the core entity, linked to one User and one Category
+## Getting started
+1. Install the .NET 8 SDK and SQL Server (or SQL Express).
+2. Set the connection string in `TaskManager.API/appsettings.json`.
+3. Set a long random `Jwt:Key` (at least 32 characters). Never commit a real key.
+4. Run the API from Visual Studio, or:
 
-## Tech Stack
+```
+dotnet run --project TaskManager.API
+```
 
-- C# / .NET 8
-- ASP.NET Core Web API
-- Entity Framework Core
-- ADO.NET (raw SQL, built alongside EF Core for comparison and learning)
-- SQL Server
-- Git / GitHub
+5. Open Swagger in your browser (the address is printed in the console).
 
-## Status
+## Authentication
+1. `POST /api/Users` to register.
+2. `POST /api/Auth/login` to get a token.
+3. In Swagger, click **Authorize** and paste only the token.
+4. `GET /api/Auth/me` returns the logged-in user.
 
-🚧 In active development.
+## Run the tests
+```
+dotnet test
+```
 
-- [x] Project architecture and setup
-- [x] Entity models (User, Category, TaskItem)
-- [x] Repository layer (ADO.NET + EF Core, Category and User complete)
-- [ ] Repository layer (TaskItem)
-- [ ] Service layer
-- [ ] API Controllers
-- [ ] Authentication & security (JWT)
-- [ ] Testing
+## Roadmap
+- [x] Layered architecture and EF Core
+- [x] JWT authentication
+- [x] Unit tests
+- [ ] GitHub Actions CI
+- [ ] Docker and Docker Compose
 - [ ] Deployment
-
-## Getting Started
-
-1. Clone the repo
-2. Update the connection string in `TaskManager.API/appsettings.json`
-3. Run database migrations (coming soon)
-4. `dotnet run` from `TaskManager.API`
