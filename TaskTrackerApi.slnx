@@ -8,4 +8,5 @@
   <Project Path="TaskManager.API/TaskManager.API.csproj" />
   <Project Path="TaskManager.Business/TaskManager.Business.csproj" Id="03139f3e-9013-4ec7-b93e-5d46558c2ff7" />
   <Project Path="TaskManager.Data/TaskManager.Data.csproj" />
+  <Project Path="TaskManager.Tests/TaskManager.Tests.csproj" Id="d26486d8-8569-4a8d-b258-476aa2a7ad7f" />
 </Solution>

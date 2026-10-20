@@ -51,7 +51,7 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme
+            new OpenApiSecurityScheme//OPenApiSecurityScheme is used to define the security scheme for the API, which in this case is a Bearer token for JWT authentication.
             {
                 Reference = new OpenApiReference
                 {
@@ -68,7 +68,8 @@ var jwt = builder.Configuration.GetSection("Jwt");
 var jwtKey = jwt["Key"]!;
 //{ "email":"test@tpst.com","password":"<its real password>"}
 builder.Services.AddSingleton<ITokenService>(
-    new TokenService(jwtKey, jwt["Issuer"]!, jwt["Audience"]!, int.Parse(jwt["ExpireMinutes"]!)));
+    new TokenService(jwtKey, jwt["Issuer"]!, jwt["Audience"]!, 
+    int.Parse(jwt["ExpireMinutes"]!)));//Add a singleton instance of TokenService with configuration values from appsettings.json
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
